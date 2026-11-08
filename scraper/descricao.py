@@ -22,8 +22,24 @@ INICIO = [
     (r"^(?:solicitando(?:-lhe)? )?(?:que )?seja (?:analisada|vista|estudada|verificada) a (possibilidade|viabilidade)\b", r"Avaliar a \1"),
 ]
 SO_PREAMBULO = re.compile(
-    r"(?:(?:Vereador|Vereadora|Vereadores)\w*\s+da\s+C[âa]mara\s+Municipal\s+de(?:\s+Neves\s+Paulista)?[\s,]*(?:abaixo)?|abaixo)\W*$", re.I
+    r"(?:(?:Vereador|Vereadora|Vereadores)\w*\s+da\s+C[âa]mara\s+Municipal\s+de(?:\s+Neves\s+Paulista)?[\s,]*(?:abaixo)?|\babaixo)\W*$", re.I
 )
+
+
+SO_QUALIFICACAO = re.compile(
+    r"\b(?:Vereador|Vereadora|Vereadores)\w*\b|\bda\s+C\S{0,3}mara(?:\s+Municipal)?(?:\s+de(?:\s+Neves(?:\s+Paulista)?)?)?", re.I
+)
+SO_DESTINATARIO = re.compile(
+    r"^(?:(?:ao|[àa]|aos)\s+exm|que oficie o setor respons[áa]vel|solicitando[- ]?(?:lhe)?\s+o seguinte pedido)", re.I
+)
+
+
+def sem_conteudo(t):
+    """True quando sobrou só nome/qualificação de autor ou só o destinatário, sem dizer do que se trata."""
+    resto = re.sub(r"\s+[e¢]\s+|[,.;]", " ", SO_QUALIFICACAO.sub("", t)).strip()
+    if not resto or resto == resto.upper():  # só nomes (em caixa alta) dos vereadores
+        return True
+    return bool(SO_DESTINATARIO.match(t)) and len(t) < 90
 
 
 def curta(assunto, tipo, limite=230):
@@ -43,7 +59,7 @@ def curta(assunto, tipo, limite=230):
     t = re.sub(r"\s+", " ", t).strip(" :,;.-")
     for padrao, troca in INICIO:
         t = re.sub(padrao, troca, t, flags=re.I).strip(" :,;.-")
-    if len(t) < 30:
+    if len(t) < 30 or sem_conteudo(t):
         return None
     t = t[0].upper() + t[1:]
     if len(t) > limite:
