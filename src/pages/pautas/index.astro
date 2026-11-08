@@ -2,6 +2,7 @@
 import { base } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import { materias, rotuloSituacao, classeSituacao, nomeMateria, dataBR } from '../../lib/data';
+import { glossario } from '../../lib/glossario';
 
 const tipos = [...new Set(materias.map((m) => m.tipo))].sort();
 const anos = [...new Set(materias.map((m) => m.ano))].sort().reverse();
@@ -10,6 +11,12 @@ const autores = [...new Set(materias.flatMap((m) => m.autoria))].sort();
 <Base title="Pautas" nav="/pautas/">
   <h1>Pautas</h1>
   <p class="lede">Projetos, requerimentos, indicações e moções acompanhados ao longo das sessões. Filtre por tipo, resultado, ano ou autoria, ou busque pelo assunto. Para 2024 e 2026 o Siscam não publica atas de sessão; ali aparecem as matérias protocoladas, com a situação oficial.</p>
+
+  <details class="glossario">
+    <summary>O que é cada tipo de matéria?</summary>
+    <dl>{glossario.map((g) => <><dt>{g.tipo}</dt><dd>{g.curto}</dd></>)}</dl>
+    <p class="meta"><a href={`${base}/sobre/#glossario`}>Explicação completa no glossário</a></p>
+  </details>
 
   <div class="filters">
     <input id="q" type="search" placeholder="Buscar por número ou assunto, ex.: 68/2025, iluminação" aria-label="Buscar" />

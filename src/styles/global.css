@@ -56,3 +56,10 @@ footer.site { border-top: 1px solid var(--line); color: var(--muted); font-size:
 table { width: 100%; border-collapse: collapse; } th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: .93rem; } th { color: var(--muted); font-weight: 600; }
 [hidden] { display: none !important; }
 .desc { margin: 4px 0 6px; font-size: .95rem; }
+
+.glossario { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 14px; margin: 0 0 18px; max-width: 70ch; }
+.glossario summary { cursor: pointer; font-weight: 600; }
+.glossario dl, .gloss { margin: 10px 0 0; }
+.glossario dt, .gloss dt { font-weight: 600; margin-top: 10px; }
+.glossario dd, .gloss dd { margin: 2px 0 0; }
+.gloss { max-width: 70ch; }

@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { sessoes } from '../lib/data';
+import { glossario } from '../lib/glossario';
 const sem = sessoes.filter((s) => s.status !== 'ok');
 const anosSem = [...new Set(sem.map((s) => s.data_iso.slice(0, 4)))].sort();
 ---
@@ -10,6 +11,10 @@ const anosSem = [...new Set(sem.map((s) => s.data_iso.slice(0, 4)))].sort();
 
   <h2>De onde vêm os dados</h2>
   <p>As atas em PDF e a lista de sessões vêm do <a href="http://consulta.siscam.com.br/camaranevespaulista/sessoes">sistema de consulta da Câmara</a>. O texto de cada ata é lido automaticamente para identificar o que foi votado, o resultado, a autoria e os vereadores que votaram contra ou se abstiveram.</p>
+
+  <h2 id="glossario">Glossário</h2>
+  <p>O que significa cada tipo de matéria que aparece nas pautas. São explicações gerais, não vêm das atas; o que vale é sempre o regimento interno e a Lei Orgânica do município.</p>
+  <dl class="gloss">{glossario.map((g) => <><dt>{g.tipo}</dt><dd>{g.texto}</dd></>)}</dl>
 
   <h2>Limites</h2>
   <ul>

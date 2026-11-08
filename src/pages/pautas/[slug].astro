@@ -3,16 +3,19 @@ import { base } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import Voto from '../../components/Voto.astro';
 import { materias, rotuloSituacao, classeSituacao, nomeMateria, slugVereador, dataBR, nomeLei } from '../../lib/data';
+import { glossarioPorTipo } from '../../lib/glossario';
 
 export function getStaticPaths() {
   return materias.map((m) => ({ params: { slug: m.slug }, props: { m } }));
 }
 const { m } = Astro.props;
+const g = glossarioPorTipo.get(m.tipo);
 ---
 <Base title={nomeMateria(m)} nav="/pautas/">
   <div class="crumbs"><a href={`${base}/pautas/`}>Pautas</a> › {nomeMateria(m)}</div>
   <h1>{nomeMateria(m)}</h1>
   <p><span class={`badge ${classeSituacao(m.situacao)}`}>{rotuloSituacao[m.situacao] ?? m.situacao}</span></p>
+  {g && <p class="meta"><b>O que é: {m.tipo}.</b> {g.texto} <a href={`${base}/sobre/#glossario`}>Ver glossário</a></p>}
   {m.descricao ? <p class="lede"><b>Do que se trata:</b> {m.descricao}</p> : <p class="meta">Sem descrição disponível no sistema da Câmara para esta matéria.</p>}
   {m.estimada && m.lei && (
     <div class="aviso-box">
