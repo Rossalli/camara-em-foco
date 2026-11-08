@@ -1,4 +1,5 @@
 ---
+import { base } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import Voto from '../../components/Voto.astro';
 import MateriaItem from '../../components/MateriaItem.astro';
@@ -14,7 +15,7 @@ const presenca = comAta.length ? Math.round((v.sessoes_presente / comAta.filter(
 const desc = (a: typeof st.contra) => a.slice().sort((x, y) => y.data_iso.localeCompare(x.data_iso));
 ---
 <Base title={v.nome} nav="/vereadores/">
-  <div class="crumbs"><a href="/vereadores/">Vereadores</a> › {v.nome}</div>
+  <div class="crumbs"><a href={`${base}/vereadores/`}>Vereadores</a> › {v.nome}</div>
   <h1>{v.nome}</h1>
   <p class="meta">{v.atual ? `Vereador(a) em exercício · ${v.partido}` : 'Legislatura anterior'}</p>
 

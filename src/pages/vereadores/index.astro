@@ -1,4 +1,5 @@
 ---
+import { base } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import { vereadores, estatVereador } from '../../lib/data';
 
@@ -14,7 +15,7 @@ const ini = (n: string) => n.split(' ').filter((p) => p.length > 2).map((p) => p
   <h2>Legislatura atual</h2>
   <div class="grid">
     {atuais.map(({ v, st }) => (
-      <a class="card person" href={`/vereadores/${v.slug}/`}>
+      <a class="card person" href={`${base}/vereadores/${v.slug}/`}>
         <span class="avatar">{ini(v.nome)}</span>
         <span><b>{v.nome}</b><br /><span class="meta">{v.partido} · {st.autoria.length} proposições · {st.contra.length} votos contra</span></span>
       </a>
@@ -25,7 +26,7 @@ const ini = (n: string) => n.split(' ').filter((p) => p.length > 2).map((p) => p
   <p class="meta">Apenas quem aparece nas atas analisadas (2021 em diante).</p>
   <div class="grid">
     {anteriores.map(({ v, st }) => (
-      <a class="card person" href={`/vereadores/${v.slug}/`}>
+      <a class="card person" href={`${base}/vereadores/${v.slug}/`}>
         <span class="avatar">{ini(v.nome)}</span>
         <span><b>{v.nome}</b><br /><span class="meta">{st.autoria.length} proposições · {st.contra.length} votos contra</span></span>
       </a>

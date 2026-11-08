@@ -1,17 +1,18 @@
 ---
+import { base } from '../lib/url';
 import { classeSituacao, rotuloSituacao, nomeMateria, dataBR, slugVereador, type Materia } from '../lib/data';
 interface Props { m: Materia }
 const { m } = Astro.props;
 ---
 <li>
   <div class="row">
-    <a class="t" href={`/pautas/${m.slug}/`}>{nomeMateria(m)}</a>
+    <a class="t" href={`${base}/pautas/${m.slug}/`}>{nomeMateria(m)}</a>
     <span class={`badge ${classeSituacao(m.situacao)}`}>{rotuloSituacao[m.situacao] ?? m.situacao}</span>
   </div>
   {m.descricao && <p class="desc">{m.descricao}{m.estimada && <> <span class="badge aviso" title="Inferida da lei sancionada, não do texto do projeto">descrição estimada</span></>}</p>}
   <div class="meta">
     {dataBR(m.dataIso)}{m.semAta && ' · protocolada (sem ata de sessão disponível)'}
-    {m.autoria.length > 0 && <> · Autoria: {m.autoria.map((n, i) => <>{i > 0 && ', '}{slugVereador(n) ? <a href={`/vereadores/${slugVereador(n)}/`}>{n}</a> : n}</>)}</>}
+    {m.autoria.length > 0 && <> · Autoria: {m.autoria.map((n, i) => <>{i > 0 && ', '}{slugVereador(n) ? <a href={`${base}/vereadores/${slugVereador(n)}/`}>{n}</a> : n}</>)}</>}
   </div>
   {m.contra.length > 0 && <div class="chips">{m.contra.map((n) => <span class="chip contra">Contra: {n}</span>)}</div>}
 </li>

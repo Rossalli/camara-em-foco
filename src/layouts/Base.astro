@@ -1,4 +1,5 @@
 ---
+import { base } from '../lib/url';
 import '../styles/global.css';
 interface Props { title: string; description?: string; nav?: string }
 const { title, description = 'Acompanhe as sessões da Câmara Municipal de Neves Paulista: o que foi votado, quem votou contra e quem são os vereadores.', nav = '' } = Astro.props;
@@ -11,14 +12,14 @@ const links = [['/sessoes/', 'Sessões'], ['/pautas/', 'Pautas'], ['/vereadores/
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title === 'Início' ? 'Câmara em Foco · Neves Paulista' : `${title} · Câmara em Foco`}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
   </head>
   <body>
     <header class="site">
       <div class="wrap">
-        <a class="logo" href="/"><img src="/favicon.svg" alt="" />Câmara em Foco</a>
+        <a class="logo" href={`${base}/`}><img src={`${base}/favicon.svg`} alt="" />Câmara em Foco</a>
         <nav aria-label="Principal">
-          {links.map(([href, label]) => <a href={href} aria-current={nav === href ? 'page' : undefined}>{label}</a>)}
+          {links.map(([href, label]) => <a href={`${base}${href}`} aria-current={nav === href ? 'page' : undefined}>{label}</a>)}
         </nav>
       </div>
     </header>

@@ -1,4 +1,5 @@
 ---
+import { base } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import Voto from '../../components/Voto.astro';
 import { sessoes, eventos, resumoSessao, dataBR, slugVereador } from '../../lib/data';
@@ -14,7 +15,7 @@ const outros = ev.filter((e) => !e.parecer && !['aprovada', 'rejeitada', 'encami
 const indicacoes = ev.filter((e) => !e.parecer && e.resultado === 'encaminhada');
 ---
 <Base title={`${s.titulo} (${dataBR(s.data_iso)})`} nav="/sessoes/">
-  <div class="crumbs"><a href="/sessoes/">Sessões</a> › {s.titulo}</div>
+  <div class="crumbs"><a href={`${base}/sessoes/`}>Sessões</a> › {s.titulo}</div>
   <h1>{s.titulo}</h1>
   <p class="meta">{dataBR(s.data_iso)}{s.fim && ` · término às ${s.fim}`}</p>
   <p class="lede">{resumoSessao(s)}</p>
@@ -28,7 +29,7 @@ const indicacoes = ev.filter((e) => !e.parecer && e.resultado === 'encaminhada')
   {s.presentes.length > 0 && (
     <>
       <h2>Presentes</h2>
-      <div class="chips">{s.presentes.map((n) => <a class="chip" href={`/vereadores/${slugVereador(n)}/`}>{n}</a>)}</div>
+      <div class="chips">{s.presentes.map((n) => <a class="chip" href={`${base}/vereadores/${slugVereador(n)}/`}>{n}</a>)}</div>
     </>
   )}
 

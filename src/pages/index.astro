@@ -1,4 +1,5 @@
 ---
+import { base } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import Voto from '../components/Voto.astro';
 import { sessoes, eventos, vereadores, materias, resumoSessao, dataBR, estatVereador } from '../lib/data';
@@ -25,12 +26,12 @@ const atuais = vereadores.filter((v) => v.atual);
   <ul class="list">
     {ultimas.map((s) => (
       <li>
-        <div class="row"><a class="t" href={`/sessoes/${s.id}/`}>{s.titulo}</a><span class="meta">{dataBR(s.data_iso)}</span></div>
+        <div class="row"><a class="t" href={`${base}/sessoes/${s.id}/`}>{s.titulo}</a><span class="meta">{dataBR(s.data_iso)}</span></div>
         <div class="meta">{resumoSessao(s)}</div>
       </li>
     ))}
   </ul>
-  <p><a href="/sessoes/">Ver todas as sessões →</a></p>
+  <p><a href={`${base}/sessoes/`}>Ver todas as sessões →</a></p>
 
   <h2>Votações com votos contrários recentes</h2>
   <ul class="list">{divididas.map((e) => <Voto e={e} mostrarSessao />)}</ul>
@@ -38,7 +39,7 @@ const atuais = vereadores.filter((v) => v.atual);
   <h2>Vereadores</h2>
   <div class="grid">
     {atuais.map((v) => (
-      <a class="card person" href={`/vereadores/${v.slug}/`}>
+      <a class="card person" href={`${base}/vereadores/${v.slug}/`}>
         <span class="avatar">{v.nome.split(' ').filter((p) => p.length > 2).map((p) => p[0]).slice(0, 2).join('')}</span>
         <span><b>{v.nome}</b><br /><span class="meta">{v.partido}</span></span>
       </a>

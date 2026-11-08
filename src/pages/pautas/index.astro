@@ -1,4 +1,5 @@
 ---
+import { base } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import { materias, rotuloSituacao, classeSituacao, nomeMateria, dataBR } from '../../lib/data';
 
@@ -27,7 +28,7 @@ const autores = [...new Set(materias.flatMap((m) => m.autoria))].sort();
       <li data-tipo={m.tipo} data-sit={['aprovada', 'rejeitada', 'encaminhada'].includes(m.situacao) ? m.situacao : 'outra'} data-ano={m.ano}
           data-autor={m.autoria.join('|')} data-busca={`${m.numero}/${m.ano} ${nomeMateria(m)} ${m.descricao ?? ''}`.toLowerCase()}>
         <div class="row">
-          <a class="t" href={`/pautas/${m.slug}/`}>{nomeMateria(m)}</a>
+          <a class="t" href={`${base}/pautas/${m.slug}/`}>{nomeMateria(m)}</a>
           <span class={`badge ${classeSituacao(m.situacao)}`}>{rotuloSituacao[m.situacao] ?? m.situacao}</span>
         </div>
         {m.descricao && <p class="desc">{m.descricao}{m.estimada && <> <span class="badge aviso" title="Inferida da lei sancionada, não do texto do projeto">descrição estimada</span></>}</p>}
