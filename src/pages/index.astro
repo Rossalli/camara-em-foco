@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Voto from '../components/Voto.astro';
+import { sessoes, eventos, vereadores, materias, resumoSessao, dataBR, estatVereador } from '../lib/data';
+
+const comDados = sessoes.filter((s) => s.status === 'ok');
+const votadas = eventos.filter((e) => !e.parecer && (e.resultado === 'aprovada' || e.resultado === 'rejeitada'));
+const rejeitadas = votadas.filter((e) => e.resultado === 'rejeitada');
+const ultimas = sessoes.filter((s) => s.status === 'ok').slice(0, 4);
+const divididas = votadas.filter((e) => e.contra.length > 0).slice().sort((a, b) => b.data_iso.localeCompare(a.data_iso)).slice(0, 5);
+const atuais = vereadores.filter((v) => v.atual);
+---
+<Base title="Início">
+  <h1>O que a Câmara de Neves Paulista votou</h1>
+  <p class="lede">Resumo de cada sessão, o que foi aprovado ou rejeitado e quem votou contra, extraído das atas oficiais.</p>
+
+  <div class="stats">
+    <div class="stat"><b>{comDados.length}</b><span>sessões analisadas</span></div>
+    <div class="stat"><b>{votadas.length}</b><span>votações registradas</span></div>
+    <div class="stat"><b>{rejeitadas.length}</b><span>matérias rejeitadas</span></div>
+    <div class="stat"><b>{materias.length}</b><span>matérias acompanhadas</span></div>
+  </div>
+
+  <h2>Últimas sessões</h2>
+  <ul class="list">
+    {ultimas.map((s) => (
+      <li>
+        <div class="row"><a class="t" href={`/sessoes/${s.id}/`}>{s.titulo}</a><span class="meta">{dataBR(s.data_iso)}</span></div>
+        <div class="meta">{resumoSessao(s)}</div>
+      </li>
+    ))}
+  </ul>
+  <p><a href="/sessoes/">Ver todas as sessões →</a></p>
+
+  <h2>Votações com votos contrários recentes</h2>
+  <ul class="list">{divididas.map((e) => <Voto e={e} mostrarSessao />)}</ul>
+
+  <h2>Vereadores</h2>
+  <div class="grid">
+    {atuais.map((v) => (
+      <a class="card person" href={`/vereadores/${v.slug}/`}>
+        <span class="avatar">{v.nome.split(' ').filter((p) => p.length > 2).map((p) => p[0]).slice(0, 2).join('')}</span>
+        <span><b>{v.nome}</b><br /><span class="meta">{v.partido}</span></span>
+      </a>
+    ))}
+  </div>
+</Base>

@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import { materias, rotuloSituacao, classeSituacao, nomeMateria, dataBR } from '../../lib/data';
+
+const tipos = [...new Set(materias.map((m) => m.tipo))].sort();
+const anos = [...new Set(materias.map((m) => m.ano))].sort().reverse();
+const autores = [...new Set(materias.flatMap((m) => m.autoria))].sort();
+---
+<Base title="Pautas" nav="/pautas/">
+  <h1>Pautas</h1>
+  <p class="lede">Projetos, requerimentos, indicações e moções acompanhados ao longo das sessões. Filtre por tipo, resultado, ano ou autoria, ou busque pelo assunto. Para 2024 e 2026 o Siscam não publica atas de sessão; ali aparecem as matérias protocoladas, com a situação oficial.</p>
+
+  <div class="filters">
+    <input id="q" type="search" placeholder="Buscar por número ou assunto, ex.: 68/2025, iluminação" aria-label="Buscar" />
+    <select id="tipo" aria-label="Tipo"><option value="">Todos os tipos</option>{tipos.map((t) => <option>{t}</option>)}</select>
+    <select id="sit" aria-label="Resultado">
+      <option value="">Qualquer resultado</option><option value="aprovada">Aprovada</option><option value="rejeitada">Rejeitada</option>
+      <option value="encaminhada">Encaminhada</option><option value="outra">Outras</option>
+    </select>
+    <select id="ano" aria-label="Ano"><option value="">Todos os anos</option>{anos.map((a) => <option>{a}</option>)}</select>
+    <select id="autor" aria-label="Autoria"><option value="">Qualquer autoria</option>{autores.map((a) => <option>{a}</option>)}</select>
+  </div>
+  <p class="meta" id="contagem" aria-live="polite"></p>
+
+  <ul class="list" id="lista">
+    {materias.map((m) => (
+      <li data-tipo={m.tipo} data-sit={['aprovada', 'rejeitada', 'encaminhada'].includes(m.situacao) ? m.situacao : 'outra'} data-ano={m.ano}
+          data-autor={m.autoria.join('|')} data-busca={`${m.numero}/${m.ano} ${nomeMateria(m)} ${m.descricao ?? ''}`.toLowerCase()}>
+        <div class="row">
+          <a class="t" href={`/pautas/${m.slug}/`}>{nomeMateria(m)}</a>
+          <span class={`badge ${classeSituacao(m.situacao)}`}>{rotuloSituacao[m.situacao] ?? m.situacao}</span>
+        </div>
+        {m.descricao && <p class="desc">{m.descricao}{m.estimada && <> <span class="badge aviso" title="Inferida da lei sancionada, não do texto do projeto">descrição estimada</span></>}</p>}
+        <div class="meta">
+          {dataBR(m.dataIso)}{m.semAta && ' · sem ata de sessão'}{m.autoria.length > 0 && ` · ${m.autoria.join(', ')}`}
+          {m.contra.length > 0 && ` · votos contra: ${m.contra.join(', ')}`}
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  <script>
+    const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+    const itens = [...document.querySelectorAll<HTMLElement>('#lista li')];
+    function filtrar() {
+      const q = $('q').value.trim().toLowerCase(), tipo = $('tipo').value, sit = $('sit').value, ano = $('ano').value, autor = $('autor').value;
+      let n = 0;
+      for (const li of itens) {
+        const ok = (!q || li.dataset.busca!.includes(q)) && (!tipo || li.dataset.tipo === tipo) && (!sit || li.dataset.sit === sit)
+          && (!ano || li.dataset.ano === ano) && (!autor || li.dataset.autor!.split('|').includes(autor));
+        li.hidden = !ok;
+        if (ok) n++;
+      }
+      $('contagem').textContent = `${n} de ${itens.length} pautas`;
+    }
+    for (const id of ['q', 'tipo', 'sit', 'ano', 'autor']) $(id).addEventListener('input', filtrar);
+    filtrar();
+  </script>
+</Base>

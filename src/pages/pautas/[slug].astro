@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import Voto from '../../components/Voto.astro';
+import { materias, rotuloSituacao, classeSituacao, nomeMateria, slugVereador, dataBR, nomeLei } from '../../lib/data';
+
+export function getStaticPaths() {
+  return materias.map((m) => ({ params: { slug: m.slug }, props: { m } }));
+}
+const { m } = Astro.props;
+---
+<Base title={nomeMateria(m)} nav="/pautas/">
+  <div class="crumbs"><a href="/pautas/">Pautas</a> › {nomeMateria(m)}</div>
+  <h1>{nomeMateria(m)}</h1>
+  <p><span class={`badge ${classeSituacao(m.situacao)}`}>{rotuloSituacao[m.situacao] ?? m.situacao}</span></p>
+  {m.descricao ? <p class="lede"><b>Do que se trata:</b> {m.descricao}</p> : <p class="meta">Sem descrição disponível no sistema da Câmara para esta matéria.</p>}
+  {m.estimada && m.lei && (
+    <div class="aviso-box">
+      <b>Descrição estimada.</b> O texto deste projeto não está publicado. A descrição acima resume a {nomeLei(m.lei)} ({m.lei.data}),
+      que provavelmente resultou dele: foi sancionada logo após a votação, na mesma quantidade e ordem dos projetos aprovados na sessão.
+      Confira na <a href={m.lei.url ?? '#'}>lei original</a>. Ementa oficial: “{m.lei.ementa}”
+    </div>
+  )}
+  {m.docUrl && <p><a class="chip" href={m.docUrl}>Texto original (PDF)</a></p>}
+  {m.autoria.length > 0 && (
+    <p class="meta">Autoria: {m.autoria.map((n, i) => <>{i > 0 && ', '}{slugVereador(n) ? <a href={`/vereadores/${slugVereador(n)}/`}>{n}</a> : n}</>)}</p>
+  )}
+  {m.contra.length > 0 && <p>Votaram contra: {m.contra.map((n, i) => <>{i > 0 && ', '}{slugVereador(n) ? <a href={`/vereadores/${slugVereador(n)}/`}>{n}</a> : n}</>)}</p>}
+  {m.eventos.length > 0 ? (
+    <>
+      <h2>Tramitação nas sessões</h2>
+      <ul class="list">{m.eventos.map((e) => <Voto e={e} mostrarSessao mostrarTitulo={false} />)}</ul>
+    </>
+  ) : <div class="aviso-box">Matéria protocolada em {dataBR(m.dataIso)}. Não há ata de sessão com texto disponível para detalhar a votação; a situação vem do cadastro oficial da Câmara.</div>}
+</Base>

@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { vereadores, estatVereador } from '../../lib/data';
+
+const card = (v: (typeof vereadores)[number]) => ({ v, st: estatVereador(v.nome) });
+const atuais = vereadores.filter((v) => v.atual).map(card);
+const anteriores = vereadores.filter((v) => !v.atual).map(card);
+const ini = (n: string) => n.split(' ').filter((p) => p.length > 2).map((p) => p[0]).slice(0, 2).join('');
+---
+<Base title="Vereadores" nav="/vereadores/">
+  <h1>Vereadores</h1>
+  <p class="lede">Quem ocupa as nove cadeiras da Câmara hoje e quem já passou por ela nas sessões analisadas.</p>
+
+  <h2>Legislatura atual</h2>
+  <div class="grid">
+    {atuais.map(({ v, st }) => (
+      <a class="card person" href={`/vereadores/${v.slug}/`}>
+        <span class="avatar">{ini(v.nome)}</span>
+        <span><b>{v.nome}</b><br /><span class="meta">{v.partido} · {st.autoria.length} proposições · {st.contra.length} votos contra</span></span>
+      </a>
+    ))}
+  </div>
+
+  <h2>Vereadores de legislaturas anteriores</h2>
+  <p class="meta">Apenas quem aparece nas atas analisadas (2021 em diante).</p>
+  <div class="grid">
+    {anteriores.map(({ v, st }) => (
+      <a class="card person" href={`/vereadores/${v.slug}/`}>
+        <span class="avatar">{ini(v.nome)}</span>
+        <span><b>{v.nome}</b><br /><span class="meta">{st.autoria.length} proposições · {st.contra.length} votos contra</span></span>
+      </a>
+    ))}
+  </div>
+</Base>

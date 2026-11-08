@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { sessoes } from '../lib/data';
+const sem = sessoes.filter((s) => s.status !== 'ok');
+const anosSem = [...new Set(sem.map((s) => s.data_iso.slice(0, 4)))].sort();
+---
+<Base title="Sobre" nav="/sobre/">
+  <h1>Sobre o projeto</h1>
+  <p class="lede">O Câmara em Foco reúne as informações das sessões da Câmara Municipal de Neves Paulista num só lugar, organizadas por sessão, por pauta e por vereador.</p>
+
+  <h2>De onde vêm os dados</h2>
+  <p>As atas em PDF e a lista de sessões vêm do <a href="http://consulta.siscam.com.br/camaranevespaulista/sessoes">sistema de consulta da Câmara</a>. O texto de cada ata é lido automaticamente para identificar o que foi votado, o resultado, a autoria e os vereadores que votaram contra ou se abstiveram.</p>
+
+  <h2>Limites</h2>
+  <ul>
+    <li>A extração é automática e pode errar, principalmente porque as atas escaneadas têm falhas de leitura. Confira sempre a ata original, linkada em cada sessão.</li>
+    <li>As atas de {anosSem.join(', ')} são imagens sem texto, então {sem.length} sessões aparecem sem votações. Elas poderão ser incluídas com uma etapa de OCR.</li>
+    <li>O sistema da Câmara não tem sessões cadastradas de 2024 nem de 2026. Nesses anos o site mostra só as matérias protocoladas, com a situação oficial.</li>
+    <li>As descrições das pautas vêm do texto cadastrado no sistema da Câmara, resumido automaticamente. O texto dos Projetos de Lei recentes não é publicado. Para os aprovados, a descrição é estimada a partir da lei sancionada logo após a votação, quando a quantidade de leis e de projetos da sessão coincide, e vem marcada como “descrição estimada”, com link para a lei. PLs rejeitados, retirados ou sem par claro ficam sem descrição. Os resumos em linguagem simples foram escritos por IA a partir da ementa oficial da lei.</li>
+    <li>Quando a ata diz "aprovado pela unanimidade dos presentes", o site não lista voto por voto. Só são nomeados os votos contra e as abstenções, como a própria ata registra.</li>
+    <li>Os resumos são gerados a partir dos números extraídos, sem interpretação do conteúdo das matérias.</li>
+  </ul>
+
+  <h2>Independência</h2>
+  <p>Este é um projeto cívico independente e não tem vínculo com a Câmara Municipal nem com a Prefeitura.</p>
+</Base>

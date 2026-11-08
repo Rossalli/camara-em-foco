@@ -1,0 +1,26 @@
+---
+import { classeSituacao, rotuloSituacao, slugVereador, slugMateria, sessaoPorId, dataBR, type Pauta } from '../lib/data';
+interface Props { e: Pauta; mostrarSessao?: boolean; mostrarTitulo?: boolean }
+const { e, mostrarSessao = false, mostrarTitulo = true } = Astro.props;
+const sessao = sessaoPorId.get(e.sessao);
+---
+<li>
+  <div class="row">
+    {mostrarTitulo && <a class="t" href={`/pautas/${slugMateria(e)}/`}>{e.tipo} {e.numero}/{e.ano}{e.parecer ? ' (parecer)' : ''}</a>}
+    <span class={`badge ${classeSituacao(e.resultado)}`}>
+      {rotuloSituacao[e.resultado] ?? e.resultado}{e.resultado === 'aprovada' && e.unanime ? ' · unanimidade' : ''}
+    </span>
+  </div>
+  {mostrarTitulo && e.descricao && <p class="desc">{e.descricao}{e.descricao_estimada && <> <span class="badge aviso" title="Inferida da lei sancionada, não do texto do projeto">descrição estimada</span></>}</p>}
+  <div class="meta">
+    {mostrarSessao && sessao && <><a href={`/sessoes/${sessao.id}/`}>{sessao.titulo}</a> · {dataBR(e.data_iso)} · </>}
+    {e.autoria.length > 0 && <>Autoria: {e.autoria.map((n, i) => <>{i > 0 && ', '}{slugVereador(n) ? <a href={`/vereadores/${slugVereador(n)}/`}>{n}</a> : n}</>)}</>}
+  </div>
+  {(e.contra.length > 0 || e.abstencoes.length > 0) && (
+    <div class="chips">
+      {e.contra.map((n) => <a class="chip contra" href={slugVereador(n) ? `/vereadores/${slugVereador(n)}/` : undefined}>Contra: {n}</a>)}
+      {e.abstencoes.map((n) => <span class="chip">Abstenção: {n}</span>)}
+    </div>
+  )}
+  <details><summary>Trecho da ata</summary><blockquote class="trecho">{e.trecho}</blockquote></details>
+</li>

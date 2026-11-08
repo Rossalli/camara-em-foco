@@ -1,0 +1,130 @@
+[
+ {
+  "slug": "antonio-bento-bezerra",
+  "nome": "Antonio Bento Bezerra",
+  "partido": "PODEMOS",
+  "atual": true,
+  "siscam_id": 74,
+  "sessoes_presente": 18
+ },
+ {
+  "slug": "edenilson-alexandre-roselli",
+  "nome": "Edenilson Alexandre Roselli",
+  "partido": "REPUBLICAN",
+  "atual": true,
+  "siscam_id": 75,
+  "sessoes_presente": 12
+ },
+ {
+  "slug": "emerson-rodrigues-ferreira",
+  "nome": "Emerson Rodrigues Ferreira",
+  "partido": "REP",
+  "atual": true,
+  "siscam_id": 71,
+  "sessoes_presente": 17
+ },
+ {
+  "slug": "everton-fermiano-da-silva",
+  "nome": "Everton Fermiano da Silva",
+  "partido": "PSD",
+  "atual": true,
+  "siscam_id": 72,
+  "sessoes_presente": 16
+ },
+ {
+  "slug": "lucas-vieira",
+  "nome": "Lucas Vieira",
+  "partido": "DEM",
+  "atual": true,
+  "siscam_id": 73,
+  "sessoes_presente": 17
+ },
+ {
+  "slug": "luis-antonio-pelacani",
+  "nome": "Luis Antonio Pelacani",
+  "partido": "PSDB",
+  "atual": true,
+  "siscam_id": 38,
+  "sessoes_presente": 64
+ },
+ {
+  "slug": "maikon-reche-de-oliveira",
+  "nome": "Maikon Reche de Oliveira",
+  "partido": "MDB",
+  "atual": true,
+  "siscam_id": 14,
+  "sessoes_presente": 16
+ },
+ {
+  "slug": "marcio-jose-baia",
+  "nome": "Marcio José Baia",
+  "partido": "PSB",
+  "atual": true,
+  "siscam_id": 62,
+  "sessoes_presente": 56
+ },
+ {
+  "slug": "sirlei-maria-da-costa",
+  "nome": "Sirlei Maria da Costa",
+  "partido": "PSD",
+  "atual": true,
+  "siscam_id": 63,
+  "sessoes_presente": 61
+ },
+ {
+  "slug": "cesar-noel-hernandez",
+  "nome": "Cesar Noel Hernandez",
+  "partido": null,
+  "atual": false,
+  "siscam_id": null,
+  "sessoes_presente": 6
+ },
+ {
+  "slug": "josiel-mauro-tobias",
+  "nome": "Josiel Mauro Tobias",
+  "partido": null,
+  "atual": false,
+  "siscam_id": null,
+  "sessoes_presente": 49
+ },
+ {
+  "slug": "jose-luiz-serafim-junior",
+  "nome": "José Luiz Serafim Junior",
+  "partido": null,
+  "atual": false,
+  "siscam_id": null,
+  "sessoes_presente": 50
+ },
+ {
+  "slug": "luis-carlos-de-souza",
+  "nome": "Luis Carlos de Souza",
+  "partido": null,
+  "atual": false,
+  "siscam_id": null,
+  "sessoes_presente": 49
+ },
+ {
+  "slug": "lupercio-aparecido-borracini",
+  "nome": "Lupércio Aparecido Borracini",
+  "partido": null,
+  "atual": false,
+  "siscam_id": null,
+  "sessoes_presente": 46
+ },
+ {
+  "slug": "marcos-perpetuo-cardozo-da-silva",
+  "nome": "Marcos Perpétuo Cardozo da Silva",
+  "partido": null,
+  "atual": false,
+  "siscam_id": null,
+  "sessoes_presente": 45
+ },
+ {
+  "slug": "valdir-balduino",
+  "nome": "Valdir Balduino",
+  "partido": null,
+  "atual": false,
+  "siscam_id": null,
+  "sessoes_presente": 40
+ }
+]

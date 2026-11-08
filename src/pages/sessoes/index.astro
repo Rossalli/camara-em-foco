@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { sessoes, dataBR } from '../../lib/data';
+
+const anos = [...new Set(sessoes.map((s) => s.data_iso.slice(0, 4)))].sort().reverse();
+---
+<Base title="Sessões" nav="/sessoes/">
+  <h1>Sessões</h1>
+  <p class="lede">Todas as sessões registradas no sistema da Câmara. Em algumas, a ata é um PDF escaneado e ainda não tem resumo nem votações extraídas.</p>
+  <div class="aviso-box">
+    O sistema da Câmara (Siscam) só registra sessões e atas até dezembro de 2025, e não tem nenhuma sessão de 2024.
+    Para 2024 e 2026 o site mostra as matérias protocoladas em <a href="/pautas/">Pautas</a>, com a situação oficial (aprovada, rejeitada), mas sem resumo de sessão nem votos individuais.
+  </div>
+  {anos.map((ano) => (
+    <>
+      <h2>{ano}</h2>
+      <ul class="list">
+        {sessoes.filter((s) => s.data_iso.startsWith(ano)).map((s) => (
+          <li>
+            <div class="row">
+              <a class="t" href={`/sessoes/${s.id}/`}>{s.titulo}</a>
+              <span class="meta">{dataBR(s.data_iso)}{s.status !== 'ok' && ' · '}{s.status !== 'ok' && <span class="badge aviso">ata sem texto</span>}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
+  ))}
+</Base>

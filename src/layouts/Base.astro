@@ -1,0 +1,31 @@
+---
+import '../styles/global.css';
+interface Props { title: string; description?: string; nav?: string }
+const { title, description = 'Acompanhe as sessões da Câmara Municipal de Neves Paulista: o que foi votado, quem votou contra e quem são os vereadores.', nav = '' } = Astro.props;
+const links = [['/sessoes/', 'Sessões'], ['/pautas/', 'Pautas'], ['/vereadores/', 'Vereadores'], ['/sobre/', 'Sobre']];
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title === 'Início' ? 'Câmara em Foco · Neves Paulista' : `${title} · Câmara em Foco`}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <a class="logo" href="/"><img src="/favicon.svg" alt="" />Câmara em Foco</a>
+        <nav aria-label="Principal">
+          {links.map(([href, label]) => <a href={href} aria-current={nav === href ? 'page' : undefined}>{label}</a>)}
+        </nav>
+      </div>
+    </header>
+    <main><div class="wrap"><slot /></div></main>
+    <footer class="site"><div class="wrap">
+      Projeto cívico independente, sem vínculo com a Câmara Municipal de Neves Paulista. Dados extraídos das atas publicadas no
+      <a href="https://camaranevespaulista.sp.gov.br">site oficial</a>; confira sempre o documento original.
+    </div></footer>
+  </body>
+</html>

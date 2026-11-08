@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import Voto from '../../components/Voto.astro';
+import MateriaItem from '../../components/MateriaItem.astro';
+import { vereadores, estatVereador, sessoes } from '../../lib/data';
+
+export function getStaticPaths() {
+  return vereadores.map((v) => ({ params: { slug: v.slug }, props: { v } }));
+}
+const { v } = Astro.props;
+const st = estatVereador(v.nome);
+const comAta = sessoes.filter((s) => s.status === 'ok');
+const presenca = comAta.length ? Math.round((v.sessoes_presente / comAta.filter((s) => s.presentes.length).length) * 100) : 0;
+const desc = (a: typeof st.contra) => a.slice().sort((x, y) => y.data_iso.localeCompare(x.data_iso));
+---
+<Base title={v.nome} nav="/vereadores/">
+  <div class="crumbs"><a href="/vereadores/">Vereadores</a> › {v.nome}</div>
+  <h1>{v.nome}</h1>
+  <p class="meta">{v.atual ? `Vereador(a) em exercício · ${v.partido}` : 'Legislatura anterior'}</p>
+
+  <div class="stats">
+    <div class="stat"><b>{st.autoria.length}</b><span>proposições de autoria</span></div>
+    <div class="stat"><b>{st.aprovadasDeAutoria}</b><span>aprovadas</span></div>
+    <div class="stat"><b>{st.rejeitadasDeAutoria}</b><span>rejeitadas</span></div>
+    <div class="stat"><b>{st.contra.length}</b><span>votos contra registrados</span></div>
+    <div class="stat"><b>{v.sessoes_presente}</b><span>presenças em ata</span></div>
+  </div>
+
+  <h2>Votou contra ({st.contra.length})</h2>
+  {st.contra.length === 0 ? <p class="meta">Nenhum voto contrário registrado nas atas analisadas.</p> :
+    <ul class="list">{desc(st.contra).map((e) => <Voto e={e} mostrarSessao />)}</ul>}
+
+  {st.abst.length > 0 && <><h2>Abstenções ({st.abst.length})</h2><ul class="list">{desc(st.abst).map((e) => <Voto e={e} mostrarSessao />)}</ul></>}
+
+  <h2>Proposições de autoria</h2>
+  <ul class="list">{st.autoria.slice(0, 60).map((m) => <MateriaItem m={m} />)}</ul>
+  {st.autoria.length > 60 && <p class="meta">Mostrando as 60 mais recentes de {st.autoria.length}.</p>}
+</Base>

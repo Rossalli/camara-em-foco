@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import Voto from '../../components/Voto.astro';
+import { sessoes, eventos, resumoSessao, dataBR, slugVereador } from '../../lib/data';
+
+export function getStaticPaths() {
+  return sessoes.map((s) => ({ params: { id: String(s.id) }, props: { s } }));
+}
+const { s } = Astro.props;
+const ev = eventos.filter((e) => e.sessao === s.id);
+const votadas = ev.filter((e) => !e.parecer && (e.resultado === 'aprovada' || e.resultado === 'rejeitada'));
+const pareceres = ev.filter((e) => e.parecer);
+const outros = ev.filter((e) => !e.parecer && !['aprovada', 'rejeitada', 'encaminhada'].includes(e.resultado));
+const indicacoes = ev.filter((e) => !e.parecer && e.resultado === 'encaminhada');
+---
+<Base title={`${s.titulo} (${dataBR(s.data_iso)})`} nav="/sessoes/">
+  <div class="crumbs"><a href="/sessoes/">Sessões</a> › {s.titulo}</div>
+  <h1>{s.titulo}</h1>
+  <p class="meta">{dataBR(s.data_iso)}{s.fim && ` · término às ${s.fim}`}</p>
+  <p class="lede">{resumoSessao(s)}</p>
+  <p>
+    {s.ata_url && <a class="chip" href={s.ata_url}>Ata em PDF</a>}
+    {s.video && <> <a class="chip" href={s.video}>Vídeo da sessão</a></>}
+  </p>
+
+  {s.status !== 'ok' && <div class="aviso-box">Esta ata é um documento escaneado. Abra o PDF para ver o que foi votado.</div>}
+
+  {s.presentes.length > 0 && (
+    <>
+      <h2>Presentes</h2>
+      <div class="chips">{s.presentes.map((n) => <a class="chip" href={`/vereadores/${slugVereador(n)}/`}>{n}</a>)}</div>
+    </>
+  )}
+
+  {votadas.length > 0 && <><h2>Votações</h2><ul class="list">{votadas.map((e) => <Voto e={e} />)}</ul></>}
+  {outros.length > 0 && <><h2>Outras deliberações</h2><ul class="list">{outros.map((e) => <Voto e={e} />)}</ul></>}
+  {pareceres.length > 0 && <><h2>Pareceres votados</h2><ul class="list">{pareceres.map((e) => <Voto e={e} />)}</ul></>}
+  {indicacoes.length > 0 && <><h2>Indicações encaminhadas ({indicacoes.length})</h2><ul class="list">{indicacoes.map((e) => <Voto e={e} />)}</ul></>}
+</Base>
