@@ -42,6 +42,18 @@ def sem_conteudo(t):
     return bool(SO_DESTINATARIO.match(t)) and len(t) < 90
 
 
+FRACA_FIM = re.compile(
+    r"\b(?:as|os|nos|nas|um|uma|uns|umas|em|de|do|da|dos|das|a|o|e|que|para|entre|com|no|na|ao|consistindo em|sejam providenciadas|denominada a rua|empresa especializada)\.?$",
+    re.I,
+)
+FRACA_INICIO = re.compile(r"^(?:refor[çc]ando a indica[çc][ãa]o|referente a[o]?\b|de neves\b)", re.I)
+
+
+def fraca(t):
+    """True para descrição truncada ou que só remete a outro documento, sem dizer do que se trata."""
+    return bool(FRACA_FIM.search(t.rstrip(". ")  + ".") or FRACA_INICIO.match(t))
+
+
 def curta(assunto, tipo, limite=230):
     if not assunto:
         return None
@@ -68,4 +80,6 @@ def curta(assunto, tipo, limite=230):
         t = corte[: ponto + 1] if ponto > 80 else corte.rsplit(" ", 1)[0] + "…"
     elif not t.endswith((".", "?", "!")):
         t += "."
+    if not t.endswith("…") and fraca(t):
+        return None
     return t
