@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import Metricas from '../../components/Metricas.astro';
+import { anoPadrao } from '../../lib/metricas';
+---
+<Base title="Métricas" nav="/metricas/">
+  <Metricas ano={anoPadrao} />
+</Base>

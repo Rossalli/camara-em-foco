@@ -3,7 +3,7 @@ import { base } from '../lib/url';
 import '../styles/global.css';
 interface Props { title: string; description?: string; nav?: string }
 const { title, description = 'Acompanhe as sessões da Câmara Municipal de Neves Paulista: o que foi votado, quem votou contra e quem são os vereadores.', nav = '' } = Astro.props;
-const links = [['/sessoes/', 'Sessões'], ['/pautas/', 'Pautas'], ['/vereadores/', 'Vereadores'], ['/sobre/', 'Sobre']];
+const links = [['/sessoes/', 'Sessões'], ['/pautas/', 'Pautas'], ['/vereadores/', 'Vereadores'], ['/metricas/', 'Métricas'], ['/sobre/', 'Sobre']];
 ---
 <!doctype html>
 <html lang="pt-BR">

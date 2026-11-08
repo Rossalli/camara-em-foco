@@ -63,3 +63,10 @@ table { width: 100%; border-collapse: collapse; } th, td { text-align: left; pad
 .glossario dt, .gloss dt { font-weight: 600; margin-top: 10px; }
 .glossario dd, .gloss dd { margin: 2px 0 0; }
 .gloss { max-width: 70ch; }
+
+.metric-rows { display: grid; gap: 12px; max-width: 70ch; }
+.bar i.brand { background: var(--brand); }
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.table-wrap table { min-width: 560px; }
+.rank td .bar { width: 90px; }
+.chips .chip[aria-current] { background: var(--brand); color: var(--surface); border-color: var(--brand); }

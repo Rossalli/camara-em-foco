@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import Metricas from '../../components/Metricas.astro';
+import { anosMetricas } from '../../lib/metricas';
+
+export function getStaticPaths() {
+  return anosMetricas.map((ano) => ({ params: { ano: String(ano) }, props: { ano } }));
+}
+const { ano } = Astro.props;
+---
+<Base title={`Métricas de ${ano}`} nav="/metricas/">
+  <Metricas ano={ano} />
+</Base>

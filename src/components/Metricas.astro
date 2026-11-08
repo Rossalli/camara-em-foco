@@ -1,0 +1,157 @@
+---
+import { base } from '../lib/url';
+import { vereadores, estatVereador } from '../lib/data';
+import { anosMetricas, anoPadrao, metricas, extremos } from '../lib/metricas';
+
+interface Props { ano: number }
+const { ano } = Astro.props;
+const m = metricas(ano);
+const fmt = (n: number, d = 1) => n.toLocaleString('pt-BR', { maximumFractionDigits: d });
+const nomes = (n: string[]) => (n.length > 3 ? `${n.slice(0, 3).join(', ')} e mais ${n.length - 3}` : n.join(', '));
+
+const ordenadas = [...m.linhas].sort((a, b) => b.solicitacoes - a.solicitacoes || b.proposicoes - a.proposicoes || a.nome.localeCompare(b.nome));
+const comPresenca = m.linhas.filter((l) => l.presentes > 0);
+type Destaque = { t: string; valor: number; nomes: string[]; f: (v: number) => string; mais: boolean };
+const destaques: Destaque[] = [];
+if (m.temAtas) {
+  destaques.push({ t: 'Mais presente', mais: false, ...extremos(comPresenca, 'presencaPct'), f: (v) => `${fmt(v, 0)}% das sessões` });
+  destaques.push({ t: 'Menos presente', mais: false, ...extremos(comPresenca, 'presencaPct', false), f: (v) => `${fmt(v, 0)}% das sessões` });
+}
+destaques.push({ t: 'Mais solicitações', mais: true, ...extremos(m.linhas, 'solicitacoes'), f: (v) => `${v} indicações e requerimentos` });
+destaques.push({ t: 'Menos solicitações', mais: false, ...extremos(m.temAtas ? comPresenca : m.linhas, 'solicitacoes', false), f: (v) => `${v} indicações e requerimentos` });
+if (m.temAtas) {
+  destaques.push({ t: 'Mais votos contra', mais: true, ...extremos(m.linhas, 'contra'), f: (v) => `${v} voto${v === 1 ? '' : 's'} contra` });
+}
+destaques.push({ t: 'Mais proposições rejeitadas', mais: true, ...extremos(m.linhas, 'rejeitadas'), f: (v) => `${v} proposiç${v === 1 ? 'ão rejeitada' : 'ões rejeitadas'}` });
+const historico = vereadores
+  .map((v) => { const st = estatVereador(v.nome); return { v, contra: st.contra.length, abst: st.abst.length, rejeitadas: st.rejeitadasDeAutoria }; })
+  .filter((x) => x.contra > 0 || x.abst > 0 || x.rejeitadas > 0)
+  .sort((a, b) => b.contra - a.contra || b.abst - a.abst || a.v.nome.localeCompare(b.v.nome))
+  .slice(0, 8);
+const total = m.matAno.length;
+const pctDe = (n: number) => fmt((n / (total || 1)) * 100, 0);
+---
+<h1>Métricas de {ano}</h1>
+<p class="lede">Como a Câmara trabalhou em {ano}: o que foi proposto, quem participou e como foram as votações.</p>
+
+<div class="chips" aria-label="Escolher ano">
+  {anosMetricas.map((a) => <a class="chip" href={`${base}/metricas/${a}/`} aria-current={a === ano ? 'page' : undefined}>{a}</a>)}
+</div>
+{ano === anoPadrao && <p class="meta">{ano} é o último ano com atas de sessão disponíveis.</p>}
+
+{!m.temAtas && (
+  <div class="aviso-box">O sistema da Câmara não tem sessões com ata lida em {ano}. Aparecem só as proposições protocoladas; presença e votos não estão disponíveis.</div>
+)}
+
+<div class="stats">
+  <div class="stat"><b>{total}</b><span>proposições protocoladas</span></div>
+  {m.temAtas && <div class="stat"><b>{m.lidas.length}</b><span>sessões com ata lida (de {m.sessoesAno.length})</span></div>}
+  {m.temAtas && <div class="stat"><b>{m.votacoes.length}</b><span>matérias votadas em plenário</span></div>}
+  {m.temAtas && m.votacoes.length > 0 && <div class="stat"><b>{fmt(100 - (m.divididas.length / m.votacoes.length) * 100, 0)}%</b><span>das votações sem nenhum voto contra ou abstenção</span></div>}
+</div>
+
+<h2>Proposições por tipo</h2>
+<p class="meta">{total} proposições com número de {ano}. <a href={`${base}/sobre/#glossario`}>O que é cada tipo?</a></p>
+<div class="metric-rows">
+  {m.tipos.map((t) => (
+    <div class="metric-row">
+      <div class="row"><span><b>{t.tipo}</b></span><span><b>{fmt(t.pct)}%</b> <span class="meta">({t.total})</span></span></div>
+      <div class="bar"><i class="brand" style={`width:${t.pct}%`}></i></div>
+    </div>
+  ))}
+</div>
+
+<h2>Como terminaram</h2>
+<div class="stats">
+  <div class="stat"><b>{pctDe(m.situacoes.aprovada)}%</b><span>aprovadas ({m.situacoes.aprovada})</span></div>
+  <div class="stat"><b>{pctDe(m.situacoes.rejeitada)}%</b><span>rejeitadas ({m.situacoes.rejeitada})</span></div>
+  <div class="stat"><b>{pctDe(m.situacoes.encaminhada)}%</b><span>encaminhadas ao Executivo ({m.situacoes.encaminhada})</span></div>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Tipo</th><th>Total</th><th>Aprovadas</th><th>Rejeitadas</th><th>Outras situações</th></tr></thead>
+    <tbody>{m.tipos.map((t) => <tr><td>{t.tipo}</td><td>{t.total}</td><td>{t.aprovadas}</td><td>{t.rejeitadas}</td><td>{t.outras}</td></tr>)}</tbody>
+  </table>
+</div>
+
+<h2>Destaques entre os vereadores</h2>
+<div class="grid">
+  {destaques.map((d) => {
+    const vazio = d.mais && d.valor === 0;
+    return (
+      <div class="card">
+        <span class="meta">{d.t}</span>
+        <div><b>{vazio ? 'Ninguém' : nomes(d.nomes)}</b></div>
+        <span class="meta">{vazio ? 'nenhum registro no ano' : d.f(d.valor)}</span>
+      </div>
+    );
+  })}
+</div>
+{m.temAtas && <p class="meta">“Mais votos contra” conta só os votos contrários que a ata nomeia, em matérias votadas em plenário.</p>}
+
+{m.temAtas && historico.length > 0 && (
+  <>
+    <h2>Quem mais vota contra, desde 2021</h2>
+    <p class="meta">Soma de todas as atas lidas (2021 em diante), não só de {ano}. {(() => { const n = m.votacoes.filter((e) => e.contra.length).length; return n === 0 ? `Em ${ano} nenhuma votação teve voto contrário.` : `Em ${ano}, ${n} votaç${n === 1 ? 'ão teve' : 'ões tiveram'} voto contrário.`; })()}</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Vereador</th><th>Votos contra</th><th>Abstenções</th><th>Proposições de autoria rejeitadas</th></tr></thead>
+        <tbody>{historico.map((x) => <tr><td><a href={`${base}/vereadores/${x.v.slug}/`}>{x.v.nome}</a></td><td>{x.contra}</td><td>{x.abst}</td><td>{x.rejeitadas}</td></tr>)}</tbody>
+      </table>
+    </div>
+  </>
+)}
+
+<h2>Atividade de cada vereador</h2>
+<div class="table-wrap">
+  <table class="rank">
+    <thead>
+      <tr>
+        <th>Vereador</th>
+        {m.temAtas && <th>Presença</th>}
+        <th>Indicações</th><th>Requerimentos</th><th>Projetos</th><th>Aprovadas</th><th>Rejeitadas</th>
+        {m.temAtas && <th>Votos contra</th>}
+        {m.temAtas && <th>Abstenções</th>}
+      </tr>
+    </thead>
+    <tbody>
+      {ordenadas.map((l) => (
+        <tr>
+          <td><a href={`${base}/vereadores/${l.slug}/`}>{l.nome}</a></td>
+          {m.temAtas && (
+            <td>
+              {fmt(l.presencaPct, 0)}% <span class="meta">({l.presentes}/{m.lidas.length})</span>
+              <div class="bar"><i style={`width:${l.presencaPct}%`}></i></div>
+            </td>
+          )}
+          <td>{l.indicacoes}</td><td>{l.requerimentos}</td><td>{l.projetos}</td><td>{l.aprovadas}</td><td>{l.rejeitadas}</td>
+          {m.temAtas && <td>{l.contra}</td>}
+          {m.temAtas && <td>{l.abstencoes}</td>}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<p class="meta">Ordenado por solicitações (indicações + requerimentos). “Aprovadas” e “Rejeitadas” são as proposições de autoria do vereador, de qualquer tipo.{m.temAtas && ' Suplentes que assumiram por pouco tempo aparecem com presença baixa.'}</p>
+
+{m.rejeitadas.length > 0 && (
+  <>
+    <h2>Proposições rejeitadas em {ano}</h2>
+    <ul class="list">
+      {m.rejeitadas.map((r) => (
+        <li>
+          <div class="row"><a class="t" href={`${base}/pautas/${r.slug}/`}>{r.tipo} {r.numero}/{r.ano}</a><span class="meta">{r.autoria.join(', ') || 'autoria não identificada'}</span></div>
+          {r.descricao && <p class="desc">{r.descricao}</p>}
+        </li>
+      ))}
+    </ul>
+  </>
+)}
+
+<h2>Como ler estes números</h2>
+<ul>
+  <li>Presença é a participação na lista de presentes da ata, só nas sessões com a lista lida por inteiro. Não distingue falta justificada de injustificada.</li>
+  <li>Solicitações são as indicações e os requerimentos de autoria do vereador. Proposição em conjunto conta para cada autor.</li>
+  <li>A ata só nomeia votos contra e abstenções; os votos a favor não aparecem. Por isso “quem mais rejeita” é medido pelos votos contra registrados.</li>
+  <li>Os números vêm de leitura automática das atas e do cadastro da Câmara, e podem ter falhas. Confira nas atas originais. <a href={`${base}/sobre/`}>Mais sobre os dados</a>.</li>
+</ul>
