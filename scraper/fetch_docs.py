@@ -25,7 +25,7 @@ def page(i):
         return f.read_text(encoding="utf-8")
     for attempt in range(3):
         try:
-            req = urllib.request.Request(f"{BASE}/{i}", headers={"User-Agent": "camera-em-foco/0.1 (projeto cívico)"})
+            req = urllib.request.Request(f"{BASE}/{i}", headers={"User-Agent": "camara-em-foco/0.1 (projeto cívico)"})
             txt = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", "replace")
             f.write_text(txt, encoding="utf-8")
             time.sleep(0.05)

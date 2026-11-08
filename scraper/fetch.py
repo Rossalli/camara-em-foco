@@ -18,7 +18,7 @@ RAW = Path(__file__).parent / "raw"
 
 
 def get(url, binary=False):
-    req = urllib.request.Request(url, headers={"User-Agent": "camera-em-foco/0.1 (projeto cívico)"})
+    req = urllib.request.Request(url, headers={"User-Agent": "camara-em-foco/0.1 (projeto cívico)"})
     for attempt in range(3):
         try:
             with urllib.request.urlopen(req, timeout=40) as r:

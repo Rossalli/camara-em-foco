@@ -16,7 +16,7 @@ RAW = Path(__file__).parent / "raw"
 
 
 def get(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "camera-em-foco/0.1 (projeto cívico)"})
+    req = urllib.request.Request(url, headers={"User-Agent": "camara-em-foco/0.1 (projeto cívico)"})
     return urllib.request.urlopen(req, timeout=90).read().decode("utf-8", "replace")
 
 
