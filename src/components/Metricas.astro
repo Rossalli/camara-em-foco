@@ -10,7 +10,8 @@ const fmt = (n: number, d = 1) => n.toLocaleString('pt-BR', { maximumFractionDig
 const nomes = (n: string[]) => (n.length > 3 ? `${n.slice(0, 3).join(', ')} e mais ${n.length - 3}` : n.join(', '));
 
 const ordenadas = [...m.linhas].sort((a, b) => b.solicitacoes - a.solicitacoes || b.proposicoes - a.proposicoes || a.nome.localeCompare(b.nome));
-const comPresenca = m.linhas.filter((l) => l.presentes > 0);
+const comPresenca = m.linhas.filter((l) => l.presencaPct >= 50);
+const parciais = m.linhas.filter((l) => l.presentes > 0 && l.presencaPct < 50);
 type Destaque = { t: string; valor: number; nomes: string[]; f: (v: number) => string; mais: boolean };
 const destaques: Destaque[] = [];
 if (m.temAtas) {
@@ -87,6 +88,7 @@ const pctDe = (n: number) => fmt((n / (total || 1)) * 100, 0);
     );
   })}
 </div>
+{m.temAtas && parciais.length > 0 && <p class="meta">Fora dos destaques de presença, por terem participado de menos da metade das sessões (provavelmente suplentes): {parciais.map((l) => `${l.nome} (${l.presentes} de ${m.lidas.length})`).join(', ')}.</p>}
 {m.temAtas && <p class="meta">“Mais votos contra” conta só os votos contrários que a ata nomeia, em matérias votadas em plenário.</p>}
 
 {m.temAtas && historico.length > 0 && (
